@@ -31,6 +31,7 @@ L.Control.Measure = L.Control.extend({
   _className: 'leaflet-control-measure',
   options: {
     units: {},
+    messages: {},
     position: 'topright',
     primaryLengthUnit: 'feet',
     secondaryLengthUnit: 'miles',
@@ -260,7 +261,7 @@ L.Control.Measure = L.Control.extend({
             decPoint,
             thousandsSep
           );
-          display = `${display} (${formatted})`;
+          display = `${display} / ${formatted}`;
         }
         return display;
       }
@@ -337,17 +338,36 @@ L.Control.Measure = L.Control.extend({
     if (latlngs.length === 1) {
       resultFeature = L.circleMarker(latlngs[0], this._symbols.getSymbol('resultPoint'));
       popupContent = pointPopupTemplateCompiled({
-        model: calced
+        model: L.extend(
+          {
+            messages: this.options.messages
+          },
+          calced
+        )
       });
     } else if (latlngs.length === 2) {
       resultFeature = L.polyline(latlngs, this._symbols.getSymbol('resultLine'));
       popupContent = linePopupTemplateCompiled({
-        model: L.extend({}, calced, this._getMeasurementDisplayStrings(calced))
+        model: L.extend(
+          {},
+          {
+            messages: this.options.messages
+          },
+          calced,
+          this._getMeasurementDisplayStrings(calced)
+        )
       });
     } else {
       resultFeature = L.polygon(latlngs, this._symbols.getSymbol('resultArea'));
       popupContent = areaPopupTemplateCompiled({
-        model: L.extend({}, calced, this._getMeasurementDisplayStrings(calced))
+        model: L.extend(
+          {},
+          {
+            messages: this.options.messages
+          },
+          calced,
+          this._getMeasurementDisplayStrings(calced)
+        )
       });
     }
 
